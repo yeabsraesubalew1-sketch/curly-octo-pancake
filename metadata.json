@@ -1,0 +1,6 @@
+{
+  "name": "College Scheduling System",
+  "description": "A high-fidelity college course scheduling system featuring multi-role access, rigid constraints validation, and detailed conflict analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
