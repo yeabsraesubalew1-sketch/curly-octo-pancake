@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { ScheduleItem, Instructor, Course, CourseAssignment } from "../types";
 import { LogOut, BookOpen, GraduationCap, Calendar, ListTodo, Download, Lock, CalendarClock } from "lucide-react";
 import { exportInstructorPDF } from "../utils/pdfExport";
+import { formatLunchBreakTime, formatPeriodTime } from "../utils/timeFormatting";
 
 interface InstructorViewProps {
   instructor: Instructor;
@@ -143,7 +144,7 @@ export default function InstructorView({
                     <tr key={pNum}>
                       <td className="p-2 border-r border-gray-200 bg-gray-50 font-semibold font-mono text-center">
                         <span className="block text-[11px] text-slate-700">Period {pNum}</span>
-                        <span className="block text-[9px] text-slate-400 font-normal">{getPeriodTime(pNum)}</span>
+                        <span className="block text-[9px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                       </td>
                       {[0, 1, 2, 3, 4].map(dayIdx => {
                         const cell = mySchedules.find(s => s.day === dayIdx && s.period === pNum);
@@ -154,7 +155,7 @@ export default function InstructorView({
 
                   {/* LUNCH ROW */}
                   <tr className="bg-gray-100 text-[#1A365D] font-mono font-bold text-center border-y border-gray-250">
-                    <td className="p-2 border-r border-gray-200 font-semibold text-slate-700 text-[10px]">12:05-13:30</td>
+                    <td className="p-2 border-r border-gray-200 font-semibold text-slate-700 text-[10px]">{formatLunchBreakTime()}</td>
                     <td colSpan={5} className="py-2.5 tracking-[0.4em] text-[10px] uppercase font-bold text-slate-500">
                       ☕ LUNCH RECESS BREAK ☕
                     </td>
@@ -165,7 +166,7 @@ export default function InstructorView({
                     <tr key={pNum}>
                       <td className="p-2 border-r border-gray-200 bg-gray-50 font-semibold font-mono text-center">
                         <span className="block text-[11px] text-slate-700">Period {pNum}</span>
-                        <span className="block text-[9px] text-slate-400 font-normal">{getPeriodTime(pNum)}</span>
+                        <span className="block text-[9px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                       </td>
                       {[0, 1, 2, 3, 4].map(dayIdx => {
                         const cell = mySchedules.find(s => s.day === dayIdx && s.period === pNum);
@@ -299,18 +300,4 @@ export default function InstructorView({
     );
   }
 
-  function getPeriodTime(p: number): string {
-    const times = [
-      "",
-      "8:30-9:20",
-      "9:25-10:15",
-      "10:20-11:10",
-      "11:15-12:05",
-      "13:30-14:20",
-      "14:25-15:15",
-      "15:20-16:10",
-      "16:15-17:05"
-    ];
-    return times[p] || "";
-  }
 }

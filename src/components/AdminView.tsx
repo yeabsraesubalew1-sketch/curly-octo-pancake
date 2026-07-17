@@ -31,6 +31,7 @@ import {
   EyeOff
 } from "lucide-react";
 import { exportAdminPDF } from "../utils/pdfExport";
+import { formatLunchBreakTime, formatPeriodTime } from "../utils/timeFormatting";
 import { resolveScheduleSelection } from "../utils/scheduleSelection";
 
 interface AdminViewProps {
@@ -1431,12 +1432,11 @@ export default function AdminView({
                     {/* PERIODS INDEXING */}
                     {/* Periods 1 to 4 */}
                     {[1, 2, 3, 4].map(pNum => {
-                      const timeStr = getPeriodTime(pNum);
                       return (
                         <tr key={pNum}>
                           <td className="p-2 border-r border-gray-200 bg-slate-50 font-semibold text-center font-mono">
                             <span className="block text-[11px] text-slate-600">Period {pNum}</span>
-                            <span className="block text-[10px] text-slate-400 font-normal">{timeStr}</span>
+                            <span className="block text-[10px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                           </td>
                           {/* Monday-Friday slots */}
                           {[0, 1, 2, 3, 4].map(dayIdx => {
@@ -1449,7 +1449,7 @@ export default function AdminView({
 
                     {/* LUNCH GAP ROW */}
                     <tr className="bg-slate-100/90 text-slate-500 font-mono font-medium text-center border-t border-b border-gray-300">
-                      <td className="p-3 border-r border-gray-200 font-semibold text-slate-700">12:05 - 13:30</td>
+                      <td className="p-3 border-r border-gray-200 font-semibold text-slate-700">{formatLunchBreakTime()}</td>
                       <td colSpan={5} className="py-2.5 tracking-widest text-[10px] uppercase font-bold text-slate-600">
                         ☕ LUNCH BREAK GAP (University Common hour) ☕
                       </td>
@@ -1457,12 +1457,11 @@ export default function AdminView({
 
                     {/* Periods 5 to 8 */}
                     {[5, 6, 7, 8].map(pNum => {
-                      const timeStr = getPeriodTime(pNum);
                       return (
                         <tr key={pNum}>
                           <td className="p-2 border-r border-gray-200 bg-slate-50 font-semibold text-center font-mono">
                             <span className="block text-[11px] text-slate-600">Period {pNum}</span>
-                            <span className="block text-[10px] text-slate-400 font-normal">{timeStr}</span>
+                            <span className="block text-[10px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                           </td>
                           {/* Monday-Friday slots */}
                           {[0, 1, 2, 3, 4].map(dayIdx => {
@@ -1668,18 +1667,4 @@ export default function AdminView({
     );
   }
 
-  function getPeriodTime(p: number): string {
-    const times = [
-      "",
-      "8:30-9:20",
-      "9:25-10:15",
-      "10:20-11:10",
-      "11:15-12:05",
-      "13:30-14:20",
-      "14:25-15:15",
-      "15:20-16:10",
-      "16:15-17:05"
-    ];
-    return times[p] || "";
-  }
 }

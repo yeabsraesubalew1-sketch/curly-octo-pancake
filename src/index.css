@@ -25,6 +25,17 @@
   --app-input-border: rgba(255, 255, 255, 0.12);
   --app-shadow: rgba(0, 0, 0, 0.6);
   --app-accent: #06B6D4;
+  --table-header-bg: linear-gradient(135deg, rgba(3, 12, 21, 0.97) 0%, rgba(2, 8, 23, 0.98) 100%);
+  --table-row-bg: rgba(2, 8, 23, 0.78);
+  --table-hover-bg: rgba(6, 182, 212, 0.14);
+  --table-border: rgba(255, 255, 255, 0.13);
+}
+
+:root[data-theme="dark"] {
+  --table-header-bg: linear-gradient(135deg, rgba(3, 12, 21, 0.98) 0%, rgba(2, 8, 23, 0.98) 100%);
+  --table-row-bg: rgba(2, 8, 23, 0.78);
+  --table-hover-bg: rgba(6, 182, 212, 0.14);
+  --table-border: rgba(255, 255, 255, 0.13);
 }
 
 :root[data-theme="light"] {
@@ -217,18 +228,24 @@ td {
   background: linear-gradient(90deg, rgba(15, 118, 110, 0.95), rgba(8, 145, 178, 0.95));
 }
 
-/* Alternating rows or specialized slot cell styling */
-td.bg-gray-50, 
-td.bg-slate-50,
-td.bg-slate-100 {
-  background-color: rgba(255, 255, 255, 0.55) !important;
-  color: var(--app-text-muted) !important;
+/* Keep timetable side headers and period cells on the intended dark surface in dark mode */
+:root[data-theme="dark"] td.bg-gray-50,
+:root[data-theme="dark"] td.bg-slate-50,
+:root[data-theme="dark"] td.bg-slate-100,
+:root[data-theme="dark"] td[class*="bg-gray-50"],
+:root[data-theme="dark"] td[class*="bg-slate-50"],
+:root[data-theme="dark"] td[class*="bg-slate-100"] {
+  background-color: rgba(2, 8, 23, 0.78) !important;
+  color: var(--app-text) !important;
 }
 
-td.bg-gray-50 *,
-td.bg-slate-50 *,
-td.bg-slate-100 * {
-  color: var(--app-text-muted) !important;
+:root[data-theme="dark"] td.bg-gray-50 *,
+:root[data-theme="dark"] td.bg-slate-50 *,
+:root[data-theme="dark"] td.bg-slate-100 *,
+:root[data-theme="dark"] td[class*="bg-gray-50"] *,
+:root[data-theme="dark"] td[class*="bg-slate-50"] *,
+:root[data-theme="dark"] td[class*="bg-slate-100"] * {
+  color: var(--app-text) !important;
 }
 
 /* Beautiful Scheduler Timetable Grid Override */
@@ -260,46 +277,42 @@ td div[class*="bg-blue-100"] {
   border-radius: 0.375rem !important;
 }
 
-/* Lab Block */
-[class*="bg-amber-50"] {
+/* Lab block styling */
+.timetable-cell-content[class*="bg-amber"] {
   background-color: rgba(254, 243, 199, 0.95) !important;
   border-color: rgba(245, 158, 11, 0.45) !important;
   border-left-color: #D97706 !important;
   color: #92400E !important;
 }
 
-:root[data-theme="dark"] [class*="bg-amber-50"] {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
+:root[data-theme="dark"] .timetable-cell-content[class*="bg-amber"] {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
   border-left-color: #F59E0B !important;
-  color: #FDE047 !important;
+  color: #FEF3C7 !important;
 }
 
-[class*="bg-amber-50"] *,
-[class*="bg-amber-50"] span,
-[class*="bg-amber-50"] p,
-[class*="bg-amber-50"] strong {
-  color: #FEF08A !important; /* bright light yellow text */
+:root[data-theme="dark"] .timetable-cell-content[class*="bg-amber"] * {
+  color: #FEF3C7 !important;
 }
 
-/* Lecture Block */
-[class*="bg-blue-50"],
-[class*="bg-blue-100"] {
-  background-color: rgba(14, 165, 233, 0.15) !important;
-  border-color: rgba(14, 165, 233, 0.3) !important;
-  border-left-color: #0284C7 !important;
-  color: #38BDF8 !important; /* bright light cyan/blue text */
+/* Lecture block styling */
+.timetable-cell-content[class*="bg-emerald"] {
+  background-color: rgba(220, 252, 231, 0.95) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  border-left-color: #059669 !important;
+  color: #064E3B !important;
 }
 
-[class*="bg-blue-50"] *,
-[class*="bg-blue-100"] *,
-[class*="bg-blue-50"] span,
-[class*="bg-blue-100"] span,
-[class*="bg-blue-50"] p,
-[class*="bg-blue-100"] p,
-[class*="bg-blue-50"] strong,
-[class*="bg-blue-100"] strong {
-  color: #E0F2FE !important; /* very light sky blue text */
+:root[data-theme="dark"] .timetable-cell-content[class*="bg-emerald"] {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  border-left-color: #34D399 !important;
+  color: #ECFDF5 !important;
+}
+
+:root[data-theme="dark"] .timetable-cell-content[class*="bg-emerald"] * {
+  color: #ECFDF5 !important;
 }
 
 /* Header Banners Theme Overrides */

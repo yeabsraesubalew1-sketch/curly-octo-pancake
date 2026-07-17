@@ -7,6 +7,7 @@ import React from "react";
 import { ScheduleItem, Instructor, Course, CourseAssignment } from "../types";
 import { ArrowLeft, BookOpen, GraduationCap, Calendar, Clock, Download, CalendarClock } from "lucide-react";
 import { exportStudentPDF } from "../utils/pdfExport";
+import { formatLunchBreakTime, formatPeriodTime } from "../utils/timeFormatting";
 
 interface StudentViewProps {
   studentData: {
@@ -154,7 +155,7 @@ export default function StudentView({
                     <tr key={pNum}>
                       <td className="p-2 border-r border-gray-200 bg-gray-50 font-semibold font-mono text-center">
                         <span className="block text-[11px] text-slate-700">Period {pNum}</span>
-                        <span className="block text-[9px] text-slate-400 font-normal">{getPeriodTime(pNum)}</span>
+                        <span className="block text-[9px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                       </td>
                       {[0, 1, 2, 3, 4].map(dayIdx => {
                         const cell = studentSchedules.find(s => s.day === dayIdx && s.period === pNum);
@@ -165,7 +166,7 @@ export default function StudentView({
 
                   {/* LUNCH BREAK COFFEE */}
                   <tr className="bg-gray-100 text-[#1A365D] font-mono font-bold text-center border-y border-gray-250">
-                    <td className="p-2 border-r border-gray-250 font-semibold text-slate-700 text-[10px]">12:05-13:30</td>
+                    <td className="p-2 border-r border-gray-250 font-semibold text-slate-700 text-[10px]">{formatLunchBreakTime()}</td>
                     <td colSpan={5} className="py-2.5 tracking-[0.4em] text-[10px] uppercase font-bold text-slate-500">
                       ☕ LUNCH RECESS BREAK ☕
                     </td>
@@ -176,7 +177,7 @@ export default function StudentView({
                     <tr key={pNum}>
                       <td className="p-2 border-r border-gray-200 bg-gray-50 font-semibold font-mono text-center">
                         <span className="block text-[11px] text-slate-700">Period {pNum}</span>
-                        <span className="block text-[9px] text-slate-400 font-normal">{getPeriodTime(pNum)}</span>
+                        <span className="block text-[9px] text-slate-500 font-normal">{formatPeriodTime(pNum)}</span>
                       </td>
                       {[0, 1, 2, 3, 4].map(dayIdx => {
                         const cell = studentSchedules.find(s => s.day === dayIdx && s.period === pNum);
@@ -209,33 +210,19 @@ export default function StudentView({
     return (
       <td key={day} className="timetable-cell p-1 border-r border-gray-200 align-stretch">
         {cell.isLab ? (
-          <div className="timetable-cell-content h-full bg-amber-950/40 border border-amber-800/30 border-l-4 border-l-amber-500 p-2 text-[10px] text-left rounded-none">
-            <div className="font-bold text-white uppercase">{cell.courseCode}</div>
-            <div className="text-slate-300 font-medium truncate mt-0.5">{tInst ? tInst.name : "Lab Asst"}</div>
-            <span className="text-[8px] bg-amber-950/60 border border-amber-500/30 text-amber-400 px-1 font-mono font-bold block w-fit mt-1 rounded">LAB</span>
+          <div className="timetable-cell-content h-full bg-amber-600/20 border border-amber-500/40 border-l-4 border-l-amber-500 p-2 text-[10px] text-left rounded-none text-amber-950 dark:bg-amber-950/45 dark:border-amber-500/35 dark:text-amber-100">
+            <div className="font-bold uppercase">{cell.courseCode}</div>
+            <div className="font-medium truncate mt-0.5 text-amber-900/90 dark:text-slate-200">{tInst ? tInst.name : "Lab Asst"}</div>
+            <span className="text-[8px] bg-amber-600/20 border border-amber-500/35 text-amber-800 px-1 font-mono font-bold block w-fit mt-1 rounded dark:bg-amber-900/60 dark:text-amber-200">LAB</span>
           </div>
         ) : (
-          <div className="timetable-cell-content h-full bg-emerald-950/40 border border-emerald-800/30 border-l-4 border-l-emerald-500 p-2 text-[10px] text-left rounded-none">
-            <div className="font-bold text-white uppercase">{cell.courseCode}</div>
-            <div className="text-slate-300 font-medium truncate mt-0.5">{tInst ? tInst.name : "Dr. Faculty"}</div>
+          <div className="timetable-cell-content h-full bg-emerald-600/15 border border-emerald-500/35 border-l-4 border-l-emerald-500 p-2 text-[10px] text-left rounded-none text-emerald-950 dark:bg-emerald-950/45 dark:border-emerald-500/30 dark:text-emerald-100">
+            <div className="font-bold uppercase">{cell.courseCode}</div>
+            <div className="font-medium truncate mt-0.5 text-emerald-900/90 dark:text-slate-200">{tInst ? tInst.name : "Dr. Faculty"}</div>
           </div>
         )}
       </td>
     );
   }
 
-  function getPeriodTime(p: number): string {
-    const times = [
-      "",
-      "8:30-9:20",
-      "9:25-10:15",
-      "10:20-11:10",
-      "11:15-12:05",
-      "13:30-14:20",
-      "14:25-15:15",
-      "15:20-16:10",
-      "16:15-17:05"
-    ];
-    return times[p] || "";
-  }
 }

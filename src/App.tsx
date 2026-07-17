@@ -142,6 +142,8 @@ function AppShell() {
 
   React.useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    document.documentElement.classList.toggle("light", theme === "light");
     document.documentElement.style.colorScheme = theme;
     window.localStorage.setItem("edusched-theme", theme);
   }, [theme]);
