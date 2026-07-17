@@ -31,6 +31,7 @@ import {
   EyeOff
 } from "lucide-react";
 import { exportAdminPDF } from "../utils/pdfExport";
+import { resolveScheduleSelection } from "../utils/scheduleSelection";
 
 interface AdminViewProps {
   departments: Department[];
@@ -419,6 +420,35 @@ export default function AdminView({
     }
   }, [instructors, relInstructor]);
 
+  const resolvedScheduleSelection = React.useMemo(() => resolveScheduleSelection({
+    departments,
+    assignments,
+    schedule,
+    currentDepartmentId: selectedSchDept,
+    currentYear: selectedSchYear,
+    currentSection: selectedSchSection
+  }), [departments, assignments, schedule, selectedSchDept, selectedSchYear, selectedSchSection]);
+
+  React.useEffect(() => {
+    if (!selectedSchDept || !departments.some((d) => d.id === selectedSchDept)) {
+      setSelectedSchDept(departments[0]?.id || "");
+      return;
+    }
+
+    const validSections = Array.from(new Set(
+      assignments
+        .filter((a) => a.departmentId === selectedSchDept && a.year === selectedSchYear)
+        .map((a) => a.section)
+    )).concat([selectedSchSection, "Sec A", "Sec B"])
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .filter(Boolean);
+
+    if (!selectedSchSection || !validSections.includes(selectedSchSection)) {
+      const fallbackSection = resolvedScheduleSelection.section || validSections[0] || "Sec A";
+      setSelectedSchSection(fallbackSection);
+    }
+  }, [assignments, departments, resolvedScheduleSelection.section, selectedSchDept, selectedSchYear]);
+
   // Filters for Tab 1 Searches
   const filteredDepartments = departments.filter(d => 
     d.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -449,8 +479,8 @@ export default function AdminView({
   return (
     <div className="space-y-6">
       {/* Top Banner Control Panel */}
-      <div id="control-panel-header" className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-600 text-white rounded-2xl p-6 shadow-lg shadow-emerald-950/20 border border-emerald-500/20 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-        <div>
+      <div id="control-panel-header" className="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-600 text-white rounded-2xl p-4 sm:p-6 shadow-lg shadow-emerald-950/20 border border-emerald-500/20 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
           <div className="flex items-center space-x-2">
             <Sliders className="h-5 w-5 text-emerald-100 shadow-sm animate-pulse" />
             <h2 className="text-sm font-bold uppercase tracking-wider font-sans">University Registrar Terminal</h2>
@@ -458,7 +488,7 @@ export default function AdminView({
           <p className="text-[10px] text-emerald-100/90 mt-1 font-mono uppercase tracking-widest">Authority Core: Academic Dean / registrar</p>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 self-start md:self-auto">
           <button
             id="reset-db-btn"
             onClick={() => {
@@ -476,11 +506,11 @@ export default function AdminView({
       </div>
 
       {/* Tabs navigation */}
-      <div className="bg-slate-100/60 p-1.5 rounded-2xl lg:rounded-full border border-slate-200/50 flex flex-wrap gap-1.5 md:gap-3">
+      <div className="bg-slate-100/60 p-1.5 rounded-2xl lg:rounded-full border border-slate-200/50 flex flex-wrap gap-1.5 md:gap-3 overflow-x-auto">
         <button
           id="records-tab"
           onClick={() => { setActiveTab("records"); setCsvError(""); setCsvSuccess(""); }}
-          className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center space-x-2 ${
+          className={`px-3 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[9px] sm:text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 whitespace-nowrap ${
             activeTab === "records"
               ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-800/20"
               : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
@@ -493,7 +523,7 @@ export default function AdminView({
         <button
           id="relations-tab"
           onClick={() => { setActiveTab("relations"); setCsvError(""); setCsvSuccess(""); }}
-          className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center space-x-2 ${
+          className={`px-3 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[9px] sm:text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 whitespace-nowrap ${
             activeTab === "relations"
               ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-800/20"
               : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
@@ -506,7 +536,7 @@ export default function AdminView({
         <button
           id="scheduler-tab"
           onClick={() => { setActiveTab("scheduler"); setCsvError(""); setCsvSuccess(""); }}
-          className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center space-x-2 ${
+          className={`px-3 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[9px] sm:text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 whitespace-nowrap ${
             activeTab === "scheduler"
               ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-800/20"
               : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
@@ -519,7 +549,7 @@ export default function AdminView({
         <button
           id="security-tab"
           onClick={() => { setActiveTab("security"); setCsvError(""); setCsvSuccess(""); }}
-          className={`px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center space-x-2 ${
+          className={`px-3 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-full font-bold text-[9px] sm:text-[10px] md:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer flex items-center justify-center space-x-2 whitespace-nowrap ${
             activeTab === "security"
               ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-800/20"
               : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
@@ -566,7 +596,7 @@ export default function AdminView({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Form & Selection side */}
-            <div className="bg-gray-50 border border-slate-205 rounded-none p-6 lg:col-span-1">
+            <div className="bg-gray-50 border border-slate-205 rounded-none p-4 sm:p-6 lg:col-span-1">
               <h3 className="text-xs font-bold text-slate-800 mb-4 flex items-center space-x-2 uppercase tracking-wider">
                 <Plus className="h-4 w-4 text-slate-600" />
                 <span>Insert Database Entity</span>
@@ -836,9 +866,9 @@ export default function AdminView({
             </div>
 
             {/* List and search side */}
-            <div className="lg:col-span-2 border border-slate-200 bg-white rounded-none p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
-                <div>
+            <div className="lg:col-span-2 border border-slate-200 bg-white rounded-none p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div className="min-w-0">
                   <h3 className="text-sm font-bold text-slate-800">
                     {recordType === "depts" && `Departments Catalog (${departments.length} rows)`}
                     {recordType === "instructors" && `Faculty & Instructors Indexed (${instructors.length} persons)`}
@@ -848,14 +878,14 @@ export default function AdminView({
                 </div>
                 
                 {/* Search Bar */}
-                <div className="relative">
+                <div className="relative w-full sm:w-56">
                   <input
                     id="table-search-input"
                     type="text"
                     placeholder="Quick search tables..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-slate-50 border border-slate-300 rounded-none pl-8 pr-3 py-1.5 text-xs text-slate-800 outline-none w-full sm:w-56 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="bg-slate-50 border border-slate-300 rounded-none pl-8 pr-3 py-1.5 text-xs text-slate-800 outline-none w-full focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                   />
                   <Search className="h-3.5 w-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                 </div>
@@ -863,7 +893,7 @@ export default function AdminView({
 
               <div className="overflow-x-auto">
                 {recordType === "depts" && (
-                  <table id="depts-sqlite-table" className="w-full text-left border-collapse text-xs">
+                  <table id="depts-sqlite-table" className="w-full min-w-[640px] text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b-2 border-gray-300 bg-slate-100 font-bold uppercase tracking-wider text-[10px] text-slate-700">
                         <th className="p-3">Dept Code</th>
@@ -901,7 +931,7 @@ export default function AdminView({
                 )}
 
                 {recordType === "instructors" && (
-                  <table id="instructors-sqlite-table" className="w-full text-left border-collapse text-xs">
+                  <table id="instructors-sqlite-table" className="w-full min-w-[720px] text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b-2 border-gray-300 bg-slate-100 font-bold uppercase tracking-wider text-[10px] text-slate-700">
                         <th className="p-3">ID</th>
@@ -960,7 +990,7 @@ export default function AdminView({
                 )}
 
                 {recordType === "courses" && (
-                  <table id="courses-sqlite-table" className="w-full text-left border-collapse text-xs">
+                  <table id="courses-sqlite-table" className="w-full min-w-[720px] text-left border-collapse text-xs">
                     <thead>
                       <tr className="border-b-2 border-gray-300 bg-slate-100 font-bold uppercase tracking-wider text-[10px] text-slate-700">
                         <th className="p-3">Code</th>
@@ -1029,7 +1059,7 @@ export default function AdminView({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Create Mapping Relationship Side */}
-            <div className="bg-gray-50 border border-slate-205 rounded-none p-6 lg:col-span-1 h-fit font-sans">
+            <div className="bg-gray-50 border border-slate-205 rounded-none p-4 sm:p-6 lg:col-span-1 h-fit font-sans">
               <h3 className="text-xs font-bold text-slate-800 mb-4 flex items-center space-x-2 uppercase tracking-wider">
                 <SlidersHorizontal className="h-4 w-4 text-slate-505" />
                 <span>Link Course Assignment</span>
@@ -1172,7 +1202,7 @@ export default function AdminView({
               </div>
 
               <div className="overflow-x-auto">
-                <table id="assignments-sqlite-table" className="w-full text-left border-collapse text-xs">
+                <table id="assignments-sqlite-table" className="w-full min-w-[720px] text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b-2 border-gray-300 bg-slate-100 font-bold uppercase tracking-wider text-[10px] text-slate-700">
                       <th className="p-3">Section Target</th>
@@ -1241,8 +1271,8 @@ export default function AdminView({
           transition={{ duration: 0.2 }}
           className="space-y-6"
         >
-          <div className="bg-gray-50 border border-slate-205 p-6 rounded-none flex flex-col md:flex-row items-center justify-between shadow-sm">
-            <div className="mb-4 md:mb-0">
+          <div className="bg-gray-50 border border-slate-205 p-4 sm:p-6 rounded-none flex flex-col gap-4 md:flex-row md:items-center md:justify-between shadow-sm">
+            <div className="mb-0 md:mb-0">
               <h3 className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center mb-1 uppercase tracking-wider">
                 <Sparkles className="h-4 w-4 text-yellow-500 mr-2" />
                 University Scheduling conflict Solver Room
@@ -1311,7 +1341,7 @@ export default function AdminView({
 
           {/* SCHEDULE VIEWER PANEL IF GENERATED */}
           {schedule.length > 0 && (
-            <div id="schedule-viewer-panel" className="bg-white border border-slate-200 rounded-none p-6 shadow-sm space-y-6">
+            <div id="schedule-viewer-panel" className="bg-white border border-slate-200 rounded-none p-4 sm:p-6 shadow-sm space-y-6">
               
               {/* Filter controls */}
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gray-50 p-4 rounded-none border border-slate-200">
@@ -1371,11 +1401,15 @@ export default function AdminView({
                     <span>Export Master PDF</span>
                   </button>
 
-                  <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 border-l border-gray-250 pl-4">
-                    <div className="w-3 h-3 rounded-none bg-emerald-150 border-l-2 border-emerald-500"></div>
-                    <span>Lecture</span>
-                    <div className="w-3 h-3 rounded-none bg-amber-50 border-l-2 border-amber-500 ml-2"></div>
-                    <span>Lab Block</span>
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 border-l border-gray-250 pl-0 sm:pl-4">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-none bg-emerald-150 border-l-2 border-emerald-500"></div>
+                      <span>Lecture</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-none bg-amber-50 border-l-2 border-amber-500"></div>
+                      <span>Lab Block</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1455,7 +1489,7 @@ export default function AdminView({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className="max-w-md mx-auto bg-white border border-slate-200 p-8 shadow-md rounded-none space-y-6 font-sans"
+          className="max-w-md mx-auto bg-white border border-slate-200 p-4 sm:p-8 shadow-md rounded-none space-y-6 font-sans"
         >
           <div className="text-center space-y-2">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-800 border border-emerald-600/20 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-500/20 flex items-center justify-center rounded-none mx-auto shadow-sm">
@@ -1612,21 +1646,21 @@ export default function AdminView({
     
     return (
       <td key={day} className="timetable-cell p-1 border-r border-gray-200 bg-white">
-        <div className={`timetable-cell-content p-2 text-left h-full border transition duration-150 rounded-none flex flex-col justify-between ${
+        <div className={`timetable-cell-content p-2 text-left h-full border transition duration-150 rounded-none flex flex-col justify-between shadow-sm ${
           match.isLab 
-            ? "bg-amber-50/60 border border-amber-205 border-l-4 border-l-amber-500 text-amber-950 dark:bg-amber-950/45 dark:border-amber-500/30 dark:text-amber-400" 
-            : "bg-emerald-50/60 border border-emerald-205 border-l-4 border-l-emerald-500 text-emerald-950 dark:bg-emerald-950/45 dark:border-emerald-500/30 dark:text-emerald-400"
+            ? "bg-amber-100/90 border border-amber-400/80 border-l-4 border-l-amber-600 text-amber-900 shadow-amber-200/80 dark:bg-amber-950/55 dark:border-amber-500/35 dark:text-amber-100"
+            : "bg-emerald-100/90 border border-emerald-400/80 border-l-4 border-l-emerald-600 text-emerald-900 shadow-emerald-200/70 dark:bg-emerald-950/45 dark:border-emerald-500/30 dark:text-emerald-300"
         }`}>
           <div>
             <div className="font-bold tracking-tight text-[11px] flex items-center justify-between">
               <span className="text-slate-900 dark:text-slate-100 font-bold">{match.courseCode}</span>
-              {match.isLab && <span className="text-[9px] bg-amber-200 border border-amber-300 text-amber-900 font-bold px-1 uppercase tracking-wider dark:bg-amber-900 dark:border-amber-800 dark:text-amber-100">LAB</span>}
+              {match.isLab && <span className="text-[9px] bg-amber-600 border border-amber-700 text-amber-50 font-bold px-1 uppercase tracking-wider shadow-sm dark:bg-amber-900 dark:border-amber-800 dark:text-amber-100">LAB</span>}
             </div>
-            <p className="text-[10px] font-semibold text-slate-705 dark:text-slate-300 mt-0.5 truncate leading-tight">
+            <p className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 mt-0.5 truncate leading-tight">
               {cellInstructor ? cellInstructor.name : "Faculty"}
             </p>
           </div>
-          <span className="text-[9px] font-mono font-medium opacity-75 block mt-1 uppercase text-slate-550 dark:text-slate-400">
+          <span className="text-[9px] font-mono font-medium opacity-80 block mt-1 uppercase text-slate-700 dark:text-slate-400">
             {match.departmentId} Y{match.year} - {match.section}
           </span>
         </div>

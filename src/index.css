@@ -13,15 +13,48 @@
   --color-brand-light: #030712;      /* Deep Obsidian */
 }
 
+:root {
+  color-scheme: dark;
+  --app-bg: radial-gradient(circle at 50% 15%, #051b24 0%, #02070b 100%);
+  --app-surface: rgba(9, 17, 26, 0.75);
+  --app-surface-strong: rgba(2, 8, 23, 0.95);
+  --app-text: #F8FAFC;
+  --app-text-muted: #94A3B8;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-input-bg: rgba(3, 7, 18, 0.6);
+  --app-input-border: rgba(255, 255, 255, 0.12);
+  --app-shadow: rgba(0, 0, 0, 0.6);
+  --app-accent: #06B6D4;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --app-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --app-surface: rgba(255, 255, 255, 0.9);
+  --app-surface-strong: rgba(248, 250, 252, 0.98);
+  --app-text: #0f172a;
+  --app-text-muted: #475569;
+  --app-border: rgba(15, 23, 42, 0.12);
+  --app-input-bg: rgba(255, 255, 255, 0.95);
+  --app-input-border: rgba(15, 23, 42, 0.12);
+  --app-shadow: rgba(15, 23, 42, 0.12);
+  --app-accent: #0f766e;
+  --table-header-bg: linear-gradient(135deg, rgba(240, 249, 255, 0.96) 0%, rgba(236, 253, 245, 0.95) 100%);
+  --table-row-bg: rgba(255, 255, 255, 0.8);
+  --table-hover-bg: rgba(13, 148, 136, 0.06);
+  --table-border: rgba(15, 23, 42, 0.1);
+}
+
 /* Fluid flowy obsidian teal theme background */
 html,
 body {
   margin: 0;
   min-height: 100%;
   width: 100%;
-  background: radial-gradient(circle at 50% 15%, #051b24 0%, #02070b 100%) !important;
+  background: var(--app-bg) !important;
   background-attachment: fixed !important;
-  color: #F1F5F9 !important;
+  color: var(--app-text) !important;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 html,
@@ -33,6 +66,7 @@ body,
 #root {
   background: transparent;
   width: 100%;
+  color: var(--app-text);
 }
 
 /* Global Translucent Card & Containers */
@@ -48,12 +82,12 @@ body,
 div[class*="bg-gray-50"],
 div[class*="bg-slate-50"],
 div[class*="bg-slate-100"] {
-  background-color: rgba(9, 17, 26, 0.75) !important;
+  background-color: var(--app-surface) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #F8FAFC !important;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid var(--app-border) !important;
+  color: var(--app-text) !important;
+  box-shadow: 0 20px 40px -15px var(--app-shadow) !important;
   border-radius: 0.75rem !important;
 }
 
@@ -68,9 +102,9 @@ div[class*="bg-slate-100"] {
 input, 
 select, 
 textarea {
-  background-color: rgba(3, 7, 18, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  color: #F8FAFC !important;
+  background-color: var(--app-input-bg) !important;
+  border: 1px solid var(--app-input-border) !important;
+  color: var(--app-text) !important;
   border-radius: 0.5rem !important;
   outline: none !important;
   transition: all 0.2s ease-in-out !important;
@@ -84,8 +118,8 @@ textarea:focus {
 }
 
 option {
-  background-color: #0b151f !important;
-  color: #F8FAFC !important;
+  background-color: var(--app-surface-strong) !important;
+  color: var(--app-text) !important;
 }
 
 /* Custom Checkboxes, Radios and Select elements */
@@ -97,7 +131,7 @@ input[type="radio"] {
   cursor: pointer !important;
 }
 
-/* Table targeted styling for exceptional contrast and dark theme elegance */
+/* Table targeted styling with theme-aware surfaces */
 table {
   width: 100% !important;
   border-collapse: separate !important;
@@ -106,27 +140,35 @@ table {
 
 thead tr,
 tr.bg-slate-800 {
-  background: linear-gradient(135deg, #071e26 0%, #030a10 100%) !important;
-  border-bottom: 2px solid rgba(6, 182, 212, 0.15) !important;
+  background: var(--table-header-bg) !important;
+  border-bottom: 2px solid var(--table-border) !important;
 }
 
 th {
-  color: #38BDF8 !important; /* Sky blue/cyan text for highly legible table headers */
+  color: var(--app-accent) !important;
   font-weight: 700 !important;
   font-family: "Space Grotesk", sans-serif !important;
   text-transform: uppercase !important;
   font-size: 0.75rem !important;
   letter-spacing: 0.05em !important;
   padding: 1rem 0.75rem !important;
-  border-bottom: 2px solid rgba(6, 182, 212, 0.15) !important;
+  border-bottom: 2px solid var(--table-border) !important;
 }
 
 td {
   padding: 1rem 0.75rem !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  color: #E2E8F0 !important;
+  border-bottom: 1px solid var(--table-border) !important;
+  color: var(--app-text) !important;
   font-size: 0.8125rem !important;
-  background-color: rgba(9, 17, 26, 0.2) !important;
+  background-color: var(--table-row-bg) !important;
+}
+
+:root[data-theme="light"] td {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+:root[data-theme="light"] tr:hover td {
+  background-color: var(--table-hover-bg) !important;
 }
 
 .timetable-cell {
@@ -179,14 +221,14 @@ td {
 td.bg-gray-50, 
 td.bg-slate-50,
 td.bg-slate-100 {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  color: #94A3B8 !important;
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  color: var(--app-text-muted) !important;
 }
 
 td.bg-gray-50 *,
 td.bg-slate-50 *,
 td.bg-slate-100 * {
-  color: #94A3B8 !important;
+  color: var(--app-text-muted) !important;
 }
 
 /* Beautiful Scheduler Timetable Grid Override */
@@ -220,10 +262,17 @@ td div[class*="bg-blue-100"] {
 
 /* Lab Block */
 [class*="bg-amber-50"] {
+  background-color: rgba(254, 243, 199, 0.95) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  border-left-color: #D97706 !important;
+  color: #92400E !important;
+}
+
+:root[data-theme="dark"] [class*="bg-amber-50"] {
   background-color: rgba(245, 158, 11, 0.15) !important;
   border-color: rgba(245, 158, 11, 0.3) !important;
   border-left-color: #F59E0B !important;
-  color: #FDE047 !important; /* bright light amber text */
+  color: #FDE047 !important;
 }
 
 [class*="bg-amber-50"] *,
@@ -298,35 +347,35 @@ button[id*="-btn"]:hover {
 .border-gray-250,
 .border-gray-255,
 .divide-y > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--app-border) !important;
 }
 
 /* Role Selector Buttons Override */
 #role-student-btn,
 #role-instructor-btn,
 #role-admin-btn {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #94A3B8 !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--app-border) !important;
+  color: var(--app-text-muted) !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 #role-student-btn:hover,
 #role-instructor-btn:hover,
 #role-admin-btn:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  color: #F1F5F9 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(6, 182, 212, 0.08) !important;
+  color: var(--app-text) !important;
+  border-color: rgba(6, 182, 212, 0.25) !important;
 }
 
 /* Active selector state - Teal/Cyan Glow */
 #role-student-btn[class*="border-2"],
 #role-instructor-btn[class*="border-2"],
 #role-admin-btn[class*="border-2"] {
-  background: rgba(13, 148, 136, 0.15) !important;
-  border: 2px solid #06B6D4 !important;
-  color: #38BDF8 !important;
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
+  background: rgba(13, 148, 136, 0.12) !important;
+  border: 2px solid var(--app-accent) !important;
+  color: var(--app-accent) !important;
+  box-shadow: none !important;
 }
 
 /* Navigation Tab Buttons */
@@ -336,7 +385,7 @@ button[id*="-btn"]:hover {
 #security-tab {
   background: transparent !important;
   border: 1px solid transparent !important;
-  color: #94A3B8 !important;
+  color: var(--app-text-muted) !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
   box-shadow: none !important;
 }
@@ -345,8 +394,8 @@ button[id*="-btn"]:hover {
 #relations-tab:hover,
 #scheduler-tab:hover,
 #security-tab:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #F1F5F9 !important;
+  background-color: rgba(6, 182, 212, 0.08) !important;
+  color: var(--app-text) !important;
 }
 
 #records-tab[class*="bg-gradient"],
@@ -373,14 +422,14 @@ button[id*="-btn"]:hover {
 .text-indigo-950,
 .text-slate-805,
 h1, h2, h3, h4 {
-  color: #F8FAFC !important;
+  color: var(--app-text) !important;
 }
 
 .text-slate-500, 
 .text-slate-600, 
 .text-gray-500, 
 .text-gray-600 {
-  color: #94A3B8 !important;
+  color: var(--app-text-muted) !important;
 }
 
 .text-blue-600, 
@@ -423,8 +472,8 @@ h1, h2, h3, h4 {
 
 /* Tabs Panel Container & Pills Styling */
 .bg-slate-100\/60 {
-  background-color: rgba(3, 7, 18, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: color-mix(in srgb, var(--app-surface) 70%, transparent) !important;
+  border: 1px solid var(--app-border) !important;
 }
 
 /* Elegant Pill Buttons */

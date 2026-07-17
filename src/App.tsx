@@ -11,10 +11,11 @@ import LoginView from "./components/LoginView";
 import AdminPage from "./pages/AdminPage";
 import StudentPage from "./pages/StudentPage";
 import InstructorPage from "./pages/InstructorPage";
-import { CalendarClock } from "lucide-react";
+import { CalendarClock, MoonStar, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 type HealthStatus = "operational" | "degraded" | "offline" | "starting" | "unknown";
+type ThemeMode = "dark" | "light";
 
 interface HealthPayload {
   status: HealthStatus;
@@ -44,6 +45,12 @@ function AppShell() {
   const [checkingHealth, setCheckingHealth] = React.useState(false);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [toasts, setToasts] = React.useState<ToastMessage[]>([]);
+  const [theme, setTheme] = React.useState<ThemeMode>(() => {
+    if (typeof window === "undefined") return "dark";
+    const saved = window.localStorage.getItem("edusched-theme");
+    if (saved === "dark" || saved === "light") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
 
   const pushToast = React.useCallback((type: ToastMessage["type"], text: string) => {
     const id = Date.now() + Math.floor(Math.random() * 1000);
@@ -133,6 +140,12 @@ function AppShell() {
     return () => window.removeEventListener("edusched:logout-request", onLogoutRequest);
   }, [handleLogout]);
 
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem("edusched-theme", theme);
+  }, [theme]);
+
   const effectiveHealthStatus = health.db?.state ?? health.status;
   const isOperational = effectiveHealthStatus === "operational";
   const statusLabel =
@@ -160,45 +173,63 @@ function AppShell() {
         : "bg-rose-500";
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${theme === "dark" ? "text-slate-100" : "text-slate-900"}`}>
       {/* Floating Translucent Capsule Top Navigation Bar */}
-      <header className="bg-slate-900/50 backdrop-blur-xl flex items-center justify-between px-6 md:px-8 py-4 text-white sticky top-4 mx-4 md:mx-8 my-2 z-50 shadow-xl shadow-teal-950/20 rounded-2xl border border-white/10 shrink-0">
-        <div className="flex items-center gap-4">
+      <header className={`backdrop-blur-xl flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-3 py-3 sm:px-6 md:px-8 md:py-4 sticky top-2 sm:top-4 mx-2 sm:mx-4 md:mx-8 my-2 z-50 shadow-xl rounded-2xl border shrink-0 transition-colors duration-200 ${theme === "dark"
+        ? "bg-slate-900/50 text-white border-white/10 shadow-teal-950/20"
+        : "bg-white/80 text-slate-900 border-slate-200/70 shadow-slate-300/50"
+      }`}>
+        <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center rounded-xl shrink-0 shadow-md">
             <CalendarClock className="h-5 w-5 text-white" />
           </div>
-          <div>
-            <h1 className="text-sm md:text-lg font-bold tracking-tight uppercase flex items-center gap-1.5 leading-none text-white">
-              EduSched <span className="font-light text-emerald-400 text-xs md:text-sm font-sans">Academic Flow</span>
+          <div className="min-w-0">
+            <h1 className={`text-sm md:text-lg font-bold tracking-tight uppercase flex flex-wrap items-center gap-1.5 leading-none ${theme === "dark" ? "text-white" : "text-slate-900"}`}>
+              EduSched <span className={`font-light text-xs md:text-sm font-sans ${theme === "dark" ? "text-emerald-400" : "text-emerald-600"}`}>Academic Flow</span>
             </h1>
-            <span className="text-[9px] text-teal-300 font-mono block mt-0.5 tracking-wider uppercase leading-none">College Scheduling Portal</span>
+            <span className={`text-[9px] font-mono block mt-0.5 tracking-wider uppercase leading-none ${theme === "dark" ? "text-teal-300" : "text-teal-700"}`}>College Scheduling Portal</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6">
-          <div className="flex flex-col items-end text-right">
-            <span className="text-[8px] md:text-[9px] uppercase font-semibold text-slate-400 tracking-wider">System State</span>
-            <span className={`text-[10px] md:text-xs font-mono font-bold flex items-center gap-1 ${isOperational ? "text-emerald-400" : "text-rose-300"}`}>
+        <div className="flex flex-wrap items-start sm:items-center justify-end gap-2 sm:gap-3 md:gap-5">
+          <button
+            type="button"
+            onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+            className={`inline-flex items-center justify-center gap-2 rounded-full border px-3 py-1.5 text-[10px] md:text-xs font-semibold uppercase tracking-wider transition w-full sm:w-auto ${theme === "dark"
+              ? "border-white/15 bg-slate-800/70 text-slate-100 hover:bg-slate-700/80"
+              : "border-slate-200 bg-white/80 text-slate-700 hover:bg-slate-100"
+            }`}
+            aria-label="Toggle color theme"
+          >
+            {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <MoonStar className="h-3.5 w-3.5" />}
+            {theme === "dark" ? "Light" : "Dark"}
+          </button>
+          <div className="flex flex-col items-start sm:items-end text-left sm:text-right min-w-0">
+            <span className={`text-[8px] md:text-[9px] uppercase font-semibold tracking-wider ${theme === "dark" ? "text-slate-400" : "text-slate-500"}`}>System State</span>
+            <span className={`text-[10px] md:text-xs font-mono font-bold flex items-center gap-1 ${isOperational ? (theme === "dark" ? "text-emerald-400" : "text-emerald-600") : (theme === "dark" ? "text-rose-300" : "text-rose-600")}`}>
               <span className={`w-1.5 h-1.5 rounded-full inline-block ${statusColorClass} ${checkingHealth ? "animate-pulse" : ""}`}></span>
               {statusLabel}
             </span>
-            <span className={`text-[9px] max-w-[190px] truncate ${isOperational ? "text-slate-400" : "text-rose-200/90"}`}>
+            <span className={`text-[9px] max-w-[190px] truncate ${isOperational ? (theme === "dark" ? "text-slate-400" : "text-slate-500") : (theme === "dark" ? "text-rose-200/90" : "text-rose-700")}`}>
               {statusDescription}
             </span>
           </div>
           {!isOperational && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => void refreshHealth(true)}
-                className="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider bg-slate-800/80 border border-white/20 text-white hover:bg-slate-700 transition"
+                className={`flex-1 sm:flex-none px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider transition ${theme === "dark"
+                  ? "bg-slate-800/80 border border-white/20 text-white hover:bg-slate-700"
+                  : "bg-white/90 border border-slate-200 text-slate-700 hover:bg-slate-100"
+                }`}
               >
                 {checkingHealth ? "Checking..." : "Retry"}
               </button>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider bg-rose-600/90 text-white hover:bg-rose-500 transition"
+                className="flex-1 sm:flex-none px-3 py-1.5 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider bg-rose-600/90 text-white hover:bg-rose-500 transition"
               >
                 Reload
               </button>
@@ -209,7 +240,7 @@ function AppShell() {
               id="global-logout-btn"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 px-4 py-2 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider transition-all duration-300 text-white cursor-pointer shadow-md shadow-red-200/50 hover:shadow-red-300/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 px-4 py-2 text-[10px] md:text-xs font-bold rounded-full uppercase tracking-wider transition-all duration-300 text-white cursor-pointer shadow-md shadow-red-200/50 hover:shadow-red-300/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoggingOut ? "Logging out..." : "Logout"}
             </button>
@@ -218,7 +249,7 @@ function AppShell() {
       </header>
 
       {/* Main Container Workspace */}
-      <main className="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8 space-y-8">
+      <main className={`flex-grow max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 lg:p-8 space-y-6 sm:space-y-8 transition-colors duration-200 ${theme === "dark" ? "" : "bg-transparent"}`}>
         <div className="overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
@@ -227,7 +258,7 @@ function AppShell() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className={session ? "bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 md:p-8 shadow-2xl shadow-slate-950/30" : ""}
+              className={session ? `${theme === "dark" ? "bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-4 md:p-8 shadow-2xl shadow-slate-950/30" : "bg-white/70 backdrop-blur-2xl border border-slate-200/70 rounded-3xl p-4 md:p-8 shadow-2xl shadow-slate-300/40"}` : ""}
             >
               <Routes>
                 <Route path="/" element={<RootRedirect />} />
@@ -264,17 +295,17 @@ function AppShell() {
       </main>
 
       {/* Transparent Floating Footer Details */}
-      <footer className="py-6 px-6 md:px-8 flex items-center justify-between text-[10px] text-slate-400 font-mono tracking-wider shrink-0 bg-transparent">
+      <footer className={`py-4 px-3 sm:px-6 md:px-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-[10px] font-mono tracking-wider shrink-0 bg-transparent transition-colors duration-200 ${theme === "dark" ? "text-slate-400" : "text-slate-600"}`}>
         <div>EduSched Scheduling System</div>
         <div className="hidden sm:block">All rights reserved — © 2026</div>
         <div>Status: Active</div>
       </footer>
 
-      <div className="fixed top-24 right-4 z-[60] space-y-2">
+      <div className="fixed top-20 right-2 sm:top-24 sm:right-4 z-[60] space-y-2 max-w-[calc(100vw-1rem)] sm:max-w-[320px]">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`min-w-[240px] max-w-[320px] px-4 py-3 rounded-xl border text-xs font-semibold shadow-lg backdrop-blur-md ${
+            className={`min-w-[220px] max-w-full sm:min-w-[240px] px-4 py-3 rounded-xl border text-xs font-semibold shadow-lg backdrop-blur-md ${
               toast.type === "success"
                 ? "bg-emerald-950/90 border-emerald-500/40 text-emerald-200"
                 : toast.type === "warning"
