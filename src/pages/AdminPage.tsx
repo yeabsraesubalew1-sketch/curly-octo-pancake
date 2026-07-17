@@ -4,7 +4,6 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import AdminView from "../components/AdminView";
 import { useAuth } from "../context/AuthContext";
 import { useAcademicData } from "../hooks/useAcademicData";
@@ -12,8 +11,7 @@ import { api } from "../lib/api";
 import { Loader2 } from "lucide-react";
 
 export default function AdminPage() {
-  const navigate = useNavigate();
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const {
     departments,
     instructors,
@@ -32,7 +30,6 @@ export default function AdminPage() {
   } = useAcademicData();
 
   const handleLogout = () => {
-    logout();
     window.dispatchEvent(new Event("edusched:logout-request"));
   };
 

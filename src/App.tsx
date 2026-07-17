@@ -107,7 +107,9 @@ function AppShell() {
     try {
       logout();
       pushToast("success", "Logged out successfully.");
-      navigate("/login", { replace: true });
+      window.requestAnimationFrame(() => {
+        navigate("/login", { replace: true });
+      });
 
       window.setTimeout(() => {
         if (window.location.pathname !== "/login") {

@@ -4,6 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { flushSync } from "react-dom";
 import { getToken, setToken } from "../lib/api";
 
 export type Role = "admin" | "student" | "instructor";
@@ -43,13 +44,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(token);
     const newSession = { role, data };
     localStorage.setItem(SESSION_KEY, JSON.stringify(newSession));
-    setSession(newSession);
+    flushSync(() => {
+      setSession(newSession);
+    });
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     localStorage.removeItem(SESSION_KEY);
-    setSession(null);
+    flushSync(() => {
+      setSession(null);
+    });
   }, []);
 
   return (

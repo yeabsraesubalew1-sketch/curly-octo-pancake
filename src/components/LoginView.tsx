@@ -63,10 +63,12 @@ export default function LoginView() {
     };
   }, [loadBootstrapData]);
 
-  const onLoginSuccess = (role: Role, data: any, token: string) => {
+  const onLoginSuccess = React.useCallback((role: Role, data: any, token: string) => {
     login(role, data, token);
-    navigate(`/${role}`, { replace: true });
-  };
+    window.requestAnimationFrame(() => {
+      navigate(`/${role}`, { replace: true });
+    });
+  }, [login, navigate]);
 
   const onInitializeAdmin = async (username: string, password: string) => {
     setLoading(true);

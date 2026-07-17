@@ -4,19 +4,16 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import StudentView from "../components/StudentView";
 import { useAuth } from "../context/AuthContext";
 import { useAcademicData } from "../hooks/useAcademicData";
 import { Loader2 } from "lucide-react";
 
 export default function StudentPage() {
-  const navigate = useNavigate();
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const { schedule, instructors, courses, assignments, loading, error } = useAcademicData();
 
   const handleBack = () => {
-    logout();
     window.dispatchEvent(new Event("edusched:logout-request"));
   };
 
