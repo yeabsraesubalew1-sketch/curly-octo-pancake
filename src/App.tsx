@@ -202,7 +202,6 @@ function AppShell() {
             aria-label="Toggle color theme"
           >
             {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <MoonStar className="h-3.5 w-3.5" />}
-            {theme === "dark" ? "Light" : "Dark"}
           </button>
           <div className="flex flex-col items-start sm:items-end text-left sm:text-right min-w-0">
             <span className={`text-[8px] md:text-[9px] uppercase font-semibold tracking-wider ${theme === "dark" ? "text-slate-400" : "text-slate-500"}`}>System State</span>
