@@ -16,6 +16,7 @@ EduSched is a full-stack college scheduling portal for managing departments, ins
 - PDF export for instructor and student timetables
 - Health and database status monitoring
 - Fallback mode when MongoDB is unavailable
+- Stable login/logout transitions that keep the route state in sync without requiring a manual refresh in most deployments
 
 ## Tech Stack
 
@@ -47,10 +48,15 @@ EduSched is a full-stack college scheduling portal for managing departments, ins
    ```bash
    cp .env.example .env.local
    ```
-   If you are using a local MongoDB instance, set:
+   Configure the values you need in `.env.local`, especially:
    ```bash
    MONGODB_URI=mongodb://127.0.0.1:27017/edusched
+   JWT_SECRET=replace-with-a-long-random-secret
+   PORT=5000
    ```
+   - `MONGODB_URI` is optional if you want the app to fall back to local demo mode.
+   - `JWT_SECRET` is required for auth tokens to be signed and verified correctly.
+   - `PORT` controls the Express server port.
 
 ## Running the App
 
@@ -77,6 +83,14 @@ npm run server:dev
 ```bash
 npm run build
 ```
+
+### Production start
+
+```bash
+npm start
+```
+
+This runs the Express server in production mode and serves the built frontend from the `dist/` folder, including client-side routes such as `/admin`, `/student`, and `/instructor`.
 
 ### Seed demo data
 
